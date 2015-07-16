@@ -6,9 +6,11 @@ cd ..
 haxelib dev munit %CD%\src
 
 cd tool
-haxelib run munit test -coverage
+haxelib run munit test 
+rem -coverage
 cd ..
 
-haxelib run munit test -coverage
+haxelib run munit test
+rem -coverage
 
-haxelib run mlib install 
+rem haxelib run mlib install 

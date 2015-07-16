@@ -1,5 +1,5 @@
 /****
-* Copyright 2013 Massive Interactive. All rights reserved.
+* Copyright 2015 Massive Interactive. All rights reserved.
 * 
 * Redistribution and use in source and binary forms, with or without modification, are
 * permitted provided that the following conditions are met:
@@ -26,6 +26,8 @@
 * or implied, of Massive Interactive.
 ****/
 
+
+
 package massive.munit;
 
 import haxe.PosInfos;
@@ -43,6 +45,8 @@ import massive.munit.ITestResultClient;
 import neko.vm.Thread;
 #elseif cpp
 import cpp.vm.Thread;
+#elseif java
+import java.vm.Thread;
 #end
 
 #if haxe3
@@ -144,6 +148,7 @@ class TestRunner implements IAsyncDelegateObserver
      */
     public function new(resultClient:ITestResultClient)
     {
+        Sys.println("XXX " + Thread.current() + " new");
         clients = new Array<ITestResultClient>();
         addResultClient(resultClient);
         asyncFactory = createAsyncFactory();
@@ -188,6 +193,9 @@ class TestRunner implements IAsyncDelegateObserver
      */
     public function run(testSuiteClasses:Array<Class<TestSuite>>):Void
     {
+        Sys.println("\nXXX " + Thread.current() + " run start:  " + running);
+        //Sys.println("\nXXX Test suite classes: " + testSuiteClasses);
+        
         if (running) return;
 
         running = true;
@@ -210,21 +218,24 @@ class TestRunner implements IAsyncDelegateObserver
             testSuites.push(Type.createInstance(suiteType, new Array()));
         }
 
-        #if (neko||cpp) 
+        #if (neko||cpp||java) 
             var self = this;
             var runThread:Thread = Thread.create(function()
             {
                 self.execute();
                 while (self.running)
                 {
-                    Sys.sleep(.2);
+                    Sys.sleep(5);
                 }
-                var mainThead:Thread = Thread.readMessage(true);
+                var mainThead:Dynamic = Thread.readMessage(true);
+                Sys.println("\nXXX " + Thread.current() + " runThread received main thread: " + mainThead);
                 mainThead.sendMessage("done");
             });
-
+            
+            Sys.println("\nXXX " + Thread.current() + " Before sending current thread to runThread: " + runThread);
+                
             runThread.sendMessage(Thread.current());
-            Thread.readMessage(true);
+            Sys.println("\nXXX " + Thread.current() + " Received message " + Thread.readMessage(true));
         #else
             execute();
         #end
@@ -237,6 +248,7 @@ class TestRunner implements IAsyncDelegateObserver
             var suite:TestSuite = testSuites[i];
             for (testClass in suite)
             {
+                //Sys.println("\nCurrent suite: " + suite);
                 if (activeHelper == null || activeHelper.type != testClass)
                 {
                     activeHelper = new TestClassHelper(testClass, isDebug);
@@ -383,6 +395,8 @@ class TestRunner implements IAsyncDelegateObserver
 
                 Timer.delay(function() { handler(successful); }, 10);
             }
+            
+            Sys.println("\nXXX " + Thread.current() + " client completion, setting running to false");
             running = false;
         }
     }

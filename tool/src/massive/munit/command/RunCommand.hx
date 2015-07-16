@@ -83,9 +83,11 @@ class RunCommand extends MUnitTargetCommandBase
 	
 	var hasNekoTests:Bool;
 	var hasCPPTests:Bool;
+	var hasJavaTests:Bool;
 
 	var nekoFile:File;
 	var cppFile:File;
+	var javaFile:File;
 	
 	
 	var serverTimeoutTimeSec:Int;
@@ -180,7 +182,12 @@ class RunCommand extends MUnitTargetCommandBase
 				if (type == TargetType.cpp)
 				{
 					hasCPPTests = true;
+				}
+                if (type == TargetType.java)
+				{
+					hasJavaTests = true;
 				}	
+                
 			}
 			
 		}
@@ -275,6 +282,9 @@ class RunCommand extends MUnitTargetCommandBase
 				case cpp:
 					hasCPPTests = true;
 					cppFile = file;
+				case java:
+					hasJavaTests = true;
+					javaFile = file;
 				default:
 
 					hasBrowserTests = true;
@@ -401,6 +411,9 @@ class RunCommand extends MUnitTargetCommandBase
 
 		if (hasCPPTests)
 			launchCPP(cppFile);
+            
+        if (hasJavaTests)
+			launchJava(javaFile);
 
 		if (hasBrowserTests)
 			launchFile(indexPage);
@@ -665,6 +678,24 @@ class RunCommand extends MUnitTargetCommandBase
 		FileSys.setCwd(config.dir.nativePath);
   
 		var exitCode = runCommand(file.nativePath);
+
+		FileSys.setCwd(console.originalDir.nativePath);
+		
+		if (exitCode > 0)
+			error("Error (" + exitCode + ") running " + file, exitCode);
+		
+		return exitCode;
+	}
+    
+	private function launchJava(file:File):Int
+	{
+		var tmpFile = reportRunnerDir.resolveFile(file.fileName);
+
+		file.copyTo(tmpFile);
+
+		FileSys.setCwd(config.dir.nativePath);
+  
+		var exitCode = runCommand("java -jar " + file.nativePath);
 
 		FileSys.setCwd(console.originalDir.nativePath);
 		

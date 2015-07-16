@@ -2,10 +2,6 @@ import massive.munit.TestSuite;
 
 import massive.munit.AssertionExceptionTest;
 import massive.munit.AssertTest;
-import massive.munit.async.AsyncDelegateTest;
-import massive.munit.async.AsyncFactoryTest;
-import massive.munit.async.AsyncTimeoutExceptionTest;
-import massive.munit.async.MissingAsyncDelegateExceptionTest;
 import massive.munit.client.URLRequestTest;
 import massive.munit.MUnitExceptionTest;
 import massive.munit.TestClassHelperTest;
@@ -30,10 +26,6 @@ class TestSuite extends massive.munit.TestSuite
 
 		add(massive.munit.AssertionExceptionTest);
 		add(massive.munit.AssertTest);
-		add(massive.munit.async.AsyncDelegateTest);
-		add(massive.munit.async.AsyncFactoryTest);
-		add(massive.munit.async.AsyncTimeoutExceptionTest);
-		add(massive.munit.async.MissingAsyncDelegateExceptionTest);
 		add(massive.munit.client.URLRequestTest);
 		add(massive.munit.MUnitExceptionTest);
 		add(massive.munit.TestClassHelperTest);

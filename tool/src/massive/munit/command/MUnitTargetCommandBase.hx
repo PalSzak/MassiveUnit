@@ -68,6 +68,8 @@ class MUnitTargetCommandBase extends MUnitCommand
 			targetTypes.push(TargetType.neko);
 		if (console.getOption("cpp") == "true")
 			targetTypes.push(TargetType.cpp);
+        if (console.getOption("java") == "true")
+			targetTypes.push(TargetType.java);
 
 		return targetTypes;
 	}
